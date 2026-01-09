@@ -1,0 +1,35 @@
+using CommandSystem;
+
+namespace DummyAIPlugin.Commands;
+
+/// <summary>
+/// Command used to unposses dummies.
+/// </summary>
+/// <param name="dummiesManager">Reference to dummies manager.</param>
+public class UnpossesDummyCommand(DummiesManager? dummiesManager) : DummyCommandBase(dummiesManager), ICommand
+{
+    /// <summary>
+    /// Contains command name.
+    /// </summary>
+    public string Command { get; } = "unposses";
+
+    /// <summary>
+    /// Defines command aliases.
+    /// </summary>
+    public string[] Aliases { get; } = ["free"];
+
+    /// <summary>
+    /// Contains command description.
+    /// </summary>
+    public string Description { get; } = "Removes an AI controller from controlled dummy.";
+    
+    /// <inheritdoc />
+    protected override string HandleAllDummiesCommand(DummiesManager manager)
+    {
+        var count = manager.UnpossesAllDummies();
+        return $"Done! Found and unpossesed {count} dummies!";
+    }
+
+    /// <inheritdoc />
+    protected override bool HandleDummyCommand(DummiesManager manager, ReferenceHub dummy) => manager.UnpossesDummy(dummy);
+}

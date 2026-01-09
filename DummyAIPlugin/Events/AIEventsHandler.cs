@@ -1,0 +1,53 @@
+using LabApi.Events.CustomHandlers;
+using LabApi.Features.Wrappers;
+using PlayerRoles;
+using System.Linq;
+
+namespace DummyAIPlugin.Events;
+
+/// <summary>
+/// Custom event handler for custom events.
+/// </summary>
+/// <param name="plugin">Reference to plugin object for access to config.</param>
+/// <param name="dummiesManager">Reference to dummies manager.</param>
+public class AIEventsHandler(DummyAIPlugin? plugin, DummiesManager? dummiesManager) : CustomEventsHandler
+{
+    /// <summary>
+    /// Attempts to spawn a dummy AI if the selected role is not present.
+    /// </summary>
+    /// <param name="manager">Manager used to spawn AI dummy.</param>
+    /// <param name="role">Role to apply for newly spawned dummy.</param>
+    private static void SpawnIfNotPresent(DummiesManager manager, RoleTypeId role)
+    {
+        if (!Player.GetAll().Any(p => p.Role == role))
+        {
+            manager.SpawnDummy(role, role.ToString());
+        }
+    }
+
+    /// <summary>
+    /// Contains reference to plugin object for access to config object.
+    /// </summary>
+    private readonly DummyAIPlugin? _plugin = plugin;
+
+    /// <summary>
+    /// Contains a reference to dummies manager.
+    /// </summary>
+    private readonly DummiesManager? _dummiesManager = dummiesManager;
+
+    /// <inheritdoc />
+    public override void OnServerRoundStarted()
+    {
+        var config = _plugin?.Config;
+
+        if (config is null || _dummiesManager is null)
+        {
+            return;
+        }
+
+        if (config.SpawnSCP049IfNotPresentOnStart)
+        {
+            SpawnIfNotPresent(_dummiesManager, RoleTypeId.Scp049);
+        }
+    }
+}
