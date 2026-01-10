@@ -27,7 +27,7 @@ public class PossesDummyCommand(DummiesManager? dummiesManager) : DummyCommandBa
     protected override string HandleAllDummiesCommand(DummiesManager manager)
     {
         var count = manager.PossesAllDummies();
-        return $"Done! Found and possesed {count} dummies!";
+        return $"Done! Found and possessed {count} dummies!";
     }
 
     /// <inheritdoc />

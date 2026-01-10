@@ -1,5 +1,7 @@
+using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Wrappers;
+using MEC;
 using PlayerRoles;
 using System.Linq;
 
@@ -45,9 +47,21 @@ public class AIEventsHandler(DummyAIPlugin? plugin, DummiesManager? dummiesManag
             return;
         }
 
-        if (config.SpawnSCP049IfNotPresentOnStart)
+        Timing.CallDelayed(1.0f, () =>
         {
-            SpawnIfNotPresent(_dummiesManager, RoleTypeId.Scp049);
-        }
+            if (config.SpawnScp049IfNotPresentOnStart)
+            {
+                SpawnIfNotPresent(_dummiesManager, RoleTypeId.Scp049);
+            }
+        });
     }
+
+    /// <inheritdoc />
+    public override void OnServerRoundRestarted() => _dummiesManager?.UnpossesAllDummies();
+
+    /// <inheritdoc />
+    public override void OnPlayerLeft(PlayerLeftEventArgs ev) => _dummiesManager?.UnpossesDummy(ev.Player?.ReferenceHub);
+
+    /// <inheritdoc />
+    public override void OnPlayerChangedRole(PlayerChangedRoleEventArgs ev) => _dummiesManager?.HandleRoleChange(ev.Player?.ReferenceHub);
 }

@@ -39,7 +39,7 @@ public abstract class DummyCommandBase(DummiesManager? dummiesManager) : IUsageP
 
         if (_dummiesManager is null)
         {
-            response = "Dummies AI manager is unavailable.";
+            response = DummyAIParentCommand.AIManagerMissingMessage;
             return false;
         }
 
@@ -55,7 +55,7 @@ public abstract class DummyCommandBase(DummiesManager? dummiesManager) : IUsageP
             return true;
         }
 
-        var list = RAUtils.ProcessPlayerIdOrNamesList(arguments, 0, out var newargs);
+        var list = RAUtils.ProcessPlayerIdOrNamesList(arguments, 0, out _);
 
         if (list is null)
         {

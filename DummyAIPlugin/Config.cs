@@ -8,8 +8,14 @@ namespace DummyAIPlugin;
 public class Config
 {
     /// <summary>
+    /// Whether or not spectators should be able to see AI thoughts when spectating AI-controlled dummies.
+    /// </summary>
+    [Description("Whether or not spectators should be able to see AI thoughts when spectating AI-controlled dummies")]
+    public bool EnableMindVisualizations { get; set; } = false;
+
+    /// <summary>
     /// Whether or not the plugin should spawn an SCP-049 AI dummy if SCP-049 isn't present after round start.
     /// </summary>
     [Description("Whether or not the plugin should spawn an SCP-049 AI dummy if SCP-049 isn't present after round start")]
-    public bool SpawnSCP049IfNotPresentOnStart { get; set; } = true;
+    public bool SpawnScp049IfNotPresentOnStart { get; set; } = true;
 }

@@ -28,7 +28,7 @@ public class CreateDummyCommand(DummiesManager? dummiesManager) : ICommand, IUsa
     /// <summary>
     /// Defines command usage prompts.
     /// </summary>
-    public string[] Usage { get; } = ["%role%", "nickname (Optional)"];
+    public string[] Usage { get; } = ["%role%", "Nickname (Optional)"];
 
     /// <summary>
     /// Contains a reference to dummies manager.
@@ -54,7 +54,7 @@ public class CreateDummyCommand(DummiesManager? dummiesManager) : ICommand, IUsa
 
         if (_dummiesManager is null)
         {
-            response = "Dummies AI manager is unavailable.";
+            response = DummyAIParentCommand.AIManagerMissingMessage;
             return false;
         }
 

@@ -74,6 +74,7 @@ public class DummyAIPlugin : Plugin<Config>
 
         Logger.Info("Enabling DummyAI...");
         _dummiesManager = new(this);
+        _dummiesManager.Init();
         _eventsHandler = new(this, _dummiesManager);
         CustomHandlersManager.RegisterEventsHandler(_eventsHandler);
         _parentCommand = new(_dummiesManager);
@@ -96,7 +97,7 @@ public class DummyAIPlugin : Plugin<Config>
         _parentCommand = null;
         CustomHandlersManager.UnregisterEventsHandler(_eventsHandler!);
         _eventsHandler = null;
-        _dummiesManager.UnpossesAllDummies();
+        _dummiesManager.Terminate();
         _dummiesManager = null;
         Logger.Info("DummyAI is disabled.");
     }

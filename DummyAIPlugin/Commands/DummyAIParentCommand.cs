@@ -1,4 +1,5 @@
 using CommandSystem;
+using NorthwoodLib.Pools;
 using System;
 
 namespace DummyAIPlugin.Commands;
@@ -12,6 +13,11 @@ public class DummyAIParentCommand : ParentCommand, IUsageProvider
     /// Permission required by this command and any of its subcommands.
     /// </summary>
     public const PlayerPermissions AIManagementPermissions = PlayerPermissions.ForceclassWithoutRestrictions;
+
+    /// <summary>
+    /// Message to use when AI dummies manager is missing.
+    /// </summary>
+    public const string AIManagerMissingMessage = "Dummies AI manager is unavailable.";
 
     /// <summary>
     /// Checks if command sender has required permissions for AI management.
@@ -104,11 +110,18 @@ public class DummyAIParentCommand : ParentCommand, IUsageProvider
 
         if (_dummiesManager is null)
         {
-            response = "Dummies AI manager is unavailable.";
+            response = AIManagerMissingMessage;
             return false;
         }
 
-        response = "Not implemented yet";
+        var sb = StringBuilderPool.Shared.Rent("Currently active AI dummies:\n");
+
+        foreach (var agent in _dummiesManager.ActiveDummies)
+        {
+            sb.Append("- ").Append(agent.ToString()).Append('\n');
+        }
+
+        response = StringBuilderPool.Shared.ToStringReturn(sb);
         return true;
     }
 }
