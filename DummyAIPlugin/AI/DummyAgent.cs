@@ -3,10 +3,11 @@ using Hints;
 using LabApi.Features.Console;
 using NorthwoodLib.Pools;
 using PlayerRoles;
-using PlayerRoles.FirstPersonControl;
+using PlayerRoles.PlayableScps.Scp049;
 using PlayerRoles.Spectating;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Jobs;
 
 namespace DummyAIPlugin.AI;
 
@@ -47,6 +48,11 @@ public class DummyAgent(ReferenceHub hub)
     /// </summary>
     public Mind? Mind { get; private set; } = null;
 
+    /// <summary>
+    /// Contains AI perception currently used by this dummy.
+    /// </summary>
+    public Perception? Perception { get; private set; } = null;
+
     /// <inheritdoc />
     public override string ToString() => $"({Hub.Network_playerId.Value}) {Hub.nicknameSync.DisplayName} playing as {CurrentRole}";
 
@@ -70,7 +76,6 @@ public class DummyAgent(ReferenceHub hub)
     {
         Disable();
         var roleObj = Hub.roleManager.CurrentRole;
-        var fpcRole = roleObj as IFpcRole;
         CurrentRole = roleObj.RoleTypeId;
 
         switch (CurrentRole)
@@ -101,9 +106,14 @@ public class DummyAgent(ReferenceHub hub)
                 Logger.Warn($"AI dummy agent is possesing role '{CurrentRole}' which is not supported yet.");
                 break;
             case RoleTypeId.Scp049:
-                if (fpcRole is not null)
+                if (roleObj is Scp049Role doc)
                 {
-                    Mind = new SCP049Mind(fpcRole.FpcModule);
+                    Perception = new(Hub);
+                    Mind = new SCP049Mind(Perception, doc, Hub);
+                }
+                else
+                {
+                    Logger.Warn($"AI dummy agent failed to posses role '{CurrentRole}' due to unexpected role class.");
                 }
 
                 break;
@@ -119,6 +129,8 @@ public class DummyAgent(ReferenceHub hub)
     {
         Mind?.Terminate();
         Mind = null;
+        Perception?.Terminate();
+        Perception = null;
         CurrentRole = RoleTypeId.None;
     }
 
@@ -126,11 +138,22 @@ public class DummyAgent(ReferenceHub hub)
     /// Performs AI update.
     /// </summary>
     /// <param name="showActionPlan">Whether or not the agent should display current action plan to spectators.</param>
-    public void Update(bool showActionPlan)
+    /// <returns>Job handles enumerator.</returns>
+    public IEnumerator<JobHandle> Update(bool showActionPlan)
     {
+        if (Perception is not null)
+        {
+            var perceptionHandles = Perception.Update();
+
+            while (perceptionHandles.MoveNext())
+            {
+                yield return perceptionHandles.Current;
+            }
+        }
+
         if (Mind is null)
         {
-            return;
+            yield break;
         }
 
         Mind.Update();
@@ -139,6 +162,8 @@ public class DummyAgent(ReferenceHub hub)
         {
             DisplayActionPlan();
         }
+
+        yield break;
     }
 
     /// <summary>

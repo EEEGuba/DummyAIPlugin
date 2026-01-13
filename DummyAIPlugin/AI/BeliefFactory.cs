@@ -19,5 +19,11 @@ public class BeliefFactory(Dictionary<string, Belief> beliefs)
     /// </summary>
     /// <param name="key">Name of new belief.</param>
     /// <param name="condition">New belief's condition.</param>
-    public void AddBelief(string key, Func<bool> condition) => _beliefs.Add(key, new(key, condition));
+    public void AddBelief(string key, Func<bool> condition) => AddBelief(new(key, condition));
+
+    /// <summary>
+    /// Adds new belief to the map.
+    /// </summary>
+    /// <param name="belief">Belief to add.</param>
+    public void AddBelief(Belief belief) => _beliefs.Add(belief.Name, belief);
 }

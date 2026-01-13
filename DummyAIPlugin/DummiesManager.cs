@@ -1,5 +1,4 @@
 using DummyAIPlugin.AI;
-using LabApi.Features.Console;
 using LabApi.Features.Enums;
 using LabApi.Features.Wrappers;
 using MEC;
@@ -8,6 +7,9 @@ using NetworkManagerUtils.Dummies;
 using PlayerRoles;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
+using Unity.Jobs;
+using UnityEngine;
 
 namespace DummyAIPlugin;
 
@@ -44,6 +46,16 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         Timing.KillCoroutines(_handle);
         _handle = Timing.RunCoroutine(UpdateDummies());
+
+        for (var i = Perception.PerceptionLayer; i >= 0; --i)
+        {
+            Physics.IgnoreLayerCollision(Perception.PerceptionLayer, i, true);
+        }
+
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.DoorLayer), false);
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.InteractableLayer), false);
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.Glasslayer), false);
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.HitboxLayer), false);
     }
 
     /// <summary>
@@ -81,13 +93,13 @@ public class DummiesManager(DummyAIPlugin plugin)
 
         if (dummy is null)
         {
-            Logger.Error("Could not spawn a new dummy instance.");
+            LabApi.Features.Console.Logger.Error("Could not spawn a new dummy instance.");
             return false;
         }
 
         dummy.roleManager.ServerSetRole(role, RoleChangeReason.LateJoin);
         Posses(dummy);
-        Logger.Info($"New AI dummy with role ({role}) spawned successfully!");
+        LabApi.Features.Console.Logger.Info($"New AI dummy with role ({role}) spawned successfully!");
         return true;
     }
 
@@ -240,7 +252,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         Unposses(target);
         NetworkServer.Destroy(target.gameObject);
-        Logger.Info("A dummy was destroyed.");
+        LabApi.Features.Console.Logger.Info("A dummy was destroyed.");
     }
 
     /// <summary>
@@ -249,13 +261,43 @@ public class DummiesManager(DummyAIPlugin plugin)
     /// <returns>Coroutine enumerator.</returns>
     private IEnumerator<float> UpdateDummies()
     {
+        var agentUpdates = new List<IEnumerator<JobHandle>>();
+
         while (true)
         {
+            agentUpdates.Clear();
             var showActionPlan = _plugin.Config?.EnableMindVisualizations ?? false;
+            var agentsCount = _dummies.Count;
 
             foreach (var agent in _dummies.Values)
             {
-                agent.Update(showActionPlan);
+                agentUpdates.Add(agent.Update(showActionPlan));
+            }
+
+            var completedCount = 0;
+            int jobHandlesCount;
+            var jobHandlesBuffer = new NativeArray<JobHandle>(agentsCount, Allocator.Temp);
+
+            while (completedCount < agentsCount)
+            {
+                completedCount = 0;
+                jobHandlesCount = 0;
+
+                foreach (var playerUpdate in agentUpdates)
+                {
+                    if (playerUpdate.MoveNext())
+                    {
+                        jobHandlesBuffer[jobHandlesCount] = playerUpdate.Current;
+                        ++jobHandlesCount;
+                    }
+                    else
+                    {
+                        ++completedCount;
+                    }
+                }
+
+                var jobHandles = jobHandlesBuffer.GetSubArray(0, jobHandlesCount);
+                JobHandle.CompleteAll(jobHandles);
             }
 
             yield return Timing.WaitForOneFrame;

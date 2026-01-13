@@ -17,7 +17,7 @@ public class Idle : IActionStrategy
     /// <summary>
     /// Contains countdown timer instance.
     /// </summary>
-    private readonly CountdownTimer timer;
+    private readonly CountdownTimer _timer;
 
     /// <summary>
     /// Creates new Idle action strategy.
@@ -26,14 +26,14 @@ public class Idle : IActionStrategy
     public Idle(float duration)
     {
         Complete = false;
-        timer = new CountdownTimer(duration, () => Complete = false, () => Complete = true);
+        _timer = new CountdownTimer(duration, () => Complete = false, () => Complete = true);
     }
 
     /// <inheritdoc />
-    public void Start() => timer.Start();
+    public void Start() => _timer.Start();
 
     /// <inheritdoc />
-    public void Update() => timer.Tick(Time.deltaTime);
+    public void Update() => _timer.Tick(Time.deltaTime);
 
     /// <inheritdoc />
     public void Stop() {}
