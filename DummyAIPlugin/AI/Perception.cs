@@ -34,7 +34,7 @@ public class Perception
     /// <summary>
     /// Glass collision layer name.
     /// </summary>
-    public const string Glasslayer = "Glass";
+    public const string GlassLayer = "Glass";
 
     /// <summary>
     /// Hitbox collision layer name.
@@ -72,9 +72,10 @@ public class Perception
         var sensing = new GameObject("DummySense");
         _sensingObject = sensing;
         sensing.layer = PerceptionLayer;
-        sensing.transform.position = dummy.transform.position;
-        sensing.transform.rotation = dummy.transform.rotation;
-        sensing.transform.parent = dummy.transform;
+        var sensingTransform = sensing.transform;
+        var parentTransform = dummy.transform;
+        sensingTransform.position = parentTransform.position;
+        sensingTransform.parent = parentTransform;
 
         var perceptionComponent = sensing.AddComponent<PerceptionComponent>();
         _perceptionComponent = perceptionComponent;
@@ -175,6 +176,6 @@ public class Perception
     /// Retrieves sense of specific type.
     /// </summary>
     /// <typeparam name="T">Type of sense to retrieve.</typeparam>
-    /// <returns>Found sense object or default value if nothing was found.</returns>
-    public T? GetSense<T>() where T : ISense => (T) Senses.Find(s => s is T);
+    /// <returns>Found sense object or <see langword="null" /> if nothing was found.</returns>
+    public T? GetSense<T>() where T : class, ISense => Senses.Find(s => s is T) as T;
 }

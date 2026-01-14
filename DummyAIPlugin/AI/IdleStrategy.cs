@@ -6,7 +6,7 @@ namespace DummyAIPlugin.AI;
 /// <summary>
 /// AI idle action.
 /// </summary>
-public class Idle : IActionStrategy
+public class IdleStrategy : IActionStrategy
 {
     /// <inheritdoc />
     public bool CanPerform => true;
@@ -23,7 +23,7 @@ public class Idle : IActionStrategy
     /// Creates new Idle action strategy.
     /// </summary>
     /// <param name="duration">Idling duration.</param>
-    public Idle(float duration)
+    public IdleStrategy(float duration)
     {
         Complete = false;
         _timer = new CountdownTimer(duration, () => Complete = false, () => Complete = true);

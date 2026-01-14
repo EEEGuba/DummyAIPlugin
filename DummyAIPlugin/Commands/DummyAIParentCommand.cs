@@ -79,6 +79,7 @@ public class DummyAIParentCommand : ParentCommand, IUsageProvider
         RegisterCommand(new PossesDummyCommand(_dummiesManager));
         RegisterCommand(new UnpossesDummyCommand(_dummiesManager));
         RegisterCommand(new DestroyDummyCommand(_dummiesManager));
+        RegisterCommand(new FixPhysicsCommand());
     }
 
     /// <summary>

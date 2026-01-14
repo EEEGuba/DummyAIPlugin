@@ -20,6 +20,22 @@ namespace DummyAIPlugin;
 public class DummiesManager(DummyAIPlugin plugin)
 {
     /// <summary>
+    /// Adjusts physics system settings for AI perception.
+    /// </summary>
+    public static void PreparePhysics()
+    {
+        for (var i = Perception.PerceptionLayer; i >= 0; --i)
+        {
+            Physics.IgnoreLayerCollision(Perception.PerceptionLayer, i, true);
+        }
+
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.DoorLayer), false);
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.InteractableLayer), false);
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.GlassLayer), false);
+        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.HitboxLayer), false);
+    }
+
+    /// <summary>
     /// Retrieves all active AI dummies.
     /// </summary>
     public IEnumerable<DummyAgent> ActiveDummies => _dummies.Values;
@@ -46,16 +62,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         Timing.KillCoroutines(_handle);
         _handle = Timing.RunCoroutine(UpdateDummies());
-
-        for (var i = Perception.PerceptionLayer; i >= 0; --i)
-        {
-            Physics.IgnoreLayerCollision(Perception.PerceptionLayer, i, true);
-        }
-
-        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.DoorLayer), false);
-        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.InteractableLayer), false);
-        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.Glasslayer), false);
-        Physics.IgnoreLayerCollision(Perception.PerceptionLayer, LayerMask.NameToLayer(Perception.HitboxLayer), false);
+        PreparePhysics();
     }
 
     /// <summary>

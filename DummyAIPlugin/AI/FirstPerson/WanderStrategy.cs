@@ -8,7 +8,7 @@ namespace DummyAIPlugin.AI.FirstPerson;
 /// </summary>
 /// <param name="fpcModule">First person control module to use.</param>
 /// <param name="wanderRadius">Wander sphere radius.</param>
-public class Wander(FirstPersonMovementModule fpcModule, float wanderRadius) : IActionStrategy
+public class WanderStrategy(FirstPersonMovementModule fpcModule, float wanderRadius) : IActionStrategy
 {
     /// <inheritdoc />
     public bool CanPerform => !_motor.MovementDetected;
