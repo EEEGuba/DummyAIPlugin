@@ -98,11 +98,11 @@ public class Mind
     /// </summary>
     public void CalculatePlan()
     {
-        var priorityLevel = _currentGoal?.Priority ?? 0.0f;
         var goalsToCheck = Goals;
 
         if (_currentGoal is not null)
         {
+            var priorityLevel = _currentGoal.Priority;
             goalsToCheck = [..Goals.Where(g => g.Priority > priorityLevel)];
         }
 
@@ -175,7 +175,8 @@ public class Mind
     /// <param name="goals">Available goals.</param>
     /// <param name="mostRecentGoal">Most recent goal.</param>
     /// <returns>A created action plan or <see langword="null" /> if plan creation failed.</returns>
-    private ActionPlan? Plan(HashSet<Goal> goals, Goal? mostRecentGoal = null) {
+    private ActionPlan? Plan(HashSet<Goal> goals, Goal? mostRecentGoal = null)
+    {
         var orderedGoals = goals
             .Where(g => g.DesiredEffects.Any(b => !b.Evaluate()))
             .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 0.01f : g.Priority);
@@ -213,7 +214,8 @@ public class Mind
     /// <param name="parent">Parent node.</param>
     /// <param name="actions">Available actions.</param>
     /// <returns><see langword="true" /> when managed to find a path, <see langword="false" /> otherwise.</returns>
-    private bool FindPath(Node parent, HashSet<Action> actions) {
+    private bool FindPath(Node parent, HashSet<Action> actions)
+    {
         var orderedActions = actions.OrderBy(a => a.Cost);
         
         foreach (var action in orderedActions)

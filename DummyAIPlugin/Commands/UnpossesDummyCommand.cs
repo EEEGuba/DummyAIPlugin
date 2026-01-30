@@ -27,7 +27,7 @@ public class UnpossesDummyCommand(DummiesManager dummiesManager) : DummyCommandB
     protected override string HandleAllDummiesCommand()
     {
         var count = DummiesManager.UnpossesAllDummies();
-        return $"Done! Found and unpossessed {count} dummies!";
+        return $"Done! Found and unpossessed {count} dumm" + (count == 1 ? "y!" : "ies!");
     }
 
     /// <inheritdoc />

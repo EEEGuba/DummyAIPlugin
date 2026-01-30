@@ -61,7 +61,7 @@ public class Perception
     public Perception(ReferenceHub dummy)
     {
         Senses = [];
-        var sensing = new GameObject("DummySense");
+        var sensing = new GameObject("DummyPerception");
         _sensingObject = sensing;
         sensing.layer = PerceptionLayer;
         var sensingTransform = sensing.transform;

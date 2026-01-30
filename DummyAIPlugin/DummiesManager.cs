@@ -8,6 +8,7 @@ using PlayerRoles;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Logger = LabApi.Features.Console.Logger;
 
 namespace DummyAIPlugin;
 
@@ -51,7 +52,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     /// <summary>
     /// Coroutine handle for updates.
     /// </summary>
-    private CoroutineHandle _handle;
+    private CoroutineHandle _handle = new();
 
     /// <summary>
     /// Initializes AI dummies.
@@ -98,13 +99,13 @@ public class DummiesManager(DummyAIPlugin plugin)
 
         if (dummy is null)
         {
-            LabApi.Features.Console.Logger.Error("Could not spawn a new dummy instance.");
+            Logger.Error("Could not spawn a new dummy instance.");
             return false;
         }
 
         dummy.roleManager.ServerSetRole(role, RoleChangeReason.LateJoin);
+        Logger.Info($"New AI dummy with role {role} spawned successfully.");
         Posses(dummy);
-        LabApi.Features.Console.Logger.Info($"New AI dummy with role ({role}) spawned successfully!");
         return true;
     }
 
@@ -137,7 +138,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         var affectedDummies = 0;
 
-        foreach (var player in Player.GetAll(PlayerSearchFlags.DummyNpcs).Select(p => p?.ReferenceHub))
+        foreach (var player in Player.GetAll(PlayerSearchFlags.DummyNpcs).Select(p => p.ReferenceHub))
         {
             if (player is not null && player.IsDummy && !_dummies.ContainsKey(player))
             {
@@ -173,7 +174,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         var affectedDummies = 0;
 
-        foreach (var player in Player.GetAll(PlayerSearchFlags.DummyNpcs).Select(p => p?.ReferenceHub))
+        foreach (var player in Player.GetAll(PlayerSearchFlags.DummyNpcs).Select(p => p.ReferenceHub))
         {
             if (player is not null && player.IsDummy && _dummies.ContainsKey(player))
             {
@@ -210,7 +211,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         var affectedDummies = 0;
 
-        foreach (var player in Player.GetAll(PlayerSearchFlags.DummyNpcs).Select(p => p?.ReferenceHub))
+        foreach (var player in Player.GetAll(PlayerSearchFlags.DummyNpcs).Select(p => p.ReferenceHub))
         {
             if (player is not null && player.IsDummy && _dummies.ContainsKey(player))
             {
@@ -232,6 +233,7 @@ public class DummiesManager(DummyAIPlugin plugin)
         var agent = new DummyAgent(target);
         agent.Activate();
         _dummies.Add(target, agent);
+        Logger.Info($"Possessed dummy [{agent}].");
     }
 
     /// <summary>
@@ -245,8 +247,9 @@ public class DummiesManager(DummyAIPlugin plugin)
             return;
         }
 
-        agent.Disable();
         _dummies.Remove(target);
+        agent.Disable();
+        Logger.Info($"Unpossessed dummy [{agent}].");
     }
 
     /// <summary>
@@ -257,7 +260,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         Unposses(target);
         NetworkServer.Destroy(target.gameObject);
-        LabApi.Features.Console.Logger.Info("A dummy was destroyed.");
+        Logger.Info("A dummy was destroyed.");
     }
 
     /// <summary>

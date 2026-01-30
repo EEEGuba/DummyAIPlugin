@@ -27,7 +27,7 @@ public class DestroyDummyCommand(DummiesManager dummiesManager) : DummyCommandBa
     protected override string HandleAllDummiesCommand()
     {
         var count = DummiesManager.DestroyAllDummies();
-        return $"Done! Found and destroyed {count} dummies!";
+        return $"Done! Found and destroyed {count} dumm" + (count == 1 ? "y!" : "ies!");
     }
 
     /// <inheritdoc />
