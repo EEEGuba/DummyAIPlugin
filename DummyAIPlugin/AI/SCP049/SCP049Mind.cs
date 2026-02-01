@@ -13,7 +13,7 @@ public class SCP049Mind : Mind
     /// <summary>
     /// Sight sense for players detection.
     /// </summary>
-    public PlayersSightSense PlayersSense { get; }
+    public PlayerSightSense PlayersSense { get; }
 
     /// <summary>
     /// Creates new mind instance.

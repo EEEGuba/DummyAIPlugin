@@ -8,7 +8,7 @@ namespace DummyAIPlugin.AI.Senses;
 /// <summary>
 /// A sight sense specialized in players detection.
 /// </summary>
-public class PlayersSightSense : SightSense<ReferenceHub>
+public class PlayerSightSense : SightSense<ReferenceHub>
 {
     /// <summary>
     /// Contains detected enemies.
@@ -20,22 +20,23 @@ public class PlayersSightSense : SightSense<ReferenceHub>
     /// </summary>
     public IEnumerable<ReferenceHub> TeammatesWithinSight { get; }
 
-    /// <inheritdoc />
-    protected override LayerMask LayerMask { get; } = LayerMask.GetMask(Perception.HitboxLayer);
-
     /// <summary>
     /// Contains the faction target dummy belongs to.
     /// </summary>
-    private readonly Faction _faction;
+    public Faction Faction { get; }
+
+    /// <inheritdoc />
+    protected override LayerMask LayerMask { get; }
 
     /// <summary>
     /// Initializes new players sight sense instance.
     /// </summary>
     /// <param name="dummy">Target dummy's reference hub.</param>
-    public PlayersSightSense(ReferenceHub dummy) : base(dummy)
+    public PlayerSightSense(ReferenceHub dummy) : base(dummy)
     {
-        _faction = dummy.GetFaction();
-        EnemiesWithinSight = ComponentsWithinSight.Where(h => h.GetFaction() != _faction && h.GetFaction() != Faction.Unclassified);
-        TeammatesWithinSight = ComponentsWithinSight.Where(o => o.GetFaction() == _faction);
+        EnemiesWithinSight = ComponentsWithinSight.Where(h => h.GetFaction() != Faction && h.GetFaction() != Faction.Unclassified);
+        TeammatesWithinSight = ComponentsWithinSight.Where(h => h.GetFaction() == Faction);
+        Faction = dummy.GetFaction();
+        LayerMask = LayerMask.GetMask(Perception.HitboxLayer);
     }
 }

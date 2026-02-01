@@ -72,10 +72,15 @@ public abstract class SightSense<TComponent>(ReferenceHub dummy) : ISense where 
     private readonly Dictionary<Collider, TComponent> _collidersToComponent = [];
 
     /// <summary>
+    /// Contains dummy's instance id.
+    /// </summary>
+    private readonly int _dummyInstanceID = dummy.gameObject.GetInstanceID();
+
+    /// <summary>
     /// Stores collision mask used for obstruction detection.
     /// </summary>
-    private readonly LayerMask _collisionLayerMask =
-        LayerMask.GetMask(Perception.DefaultLayer, Perception.DoorLayer, Perception.InteractableLayer, Perception.GlassLayer);
+    private readonly LayerMask _obstructionLayerMask =
+        LayerMask.GetMask(Perception.DefaultLayer, Perception.DoorLayer, Perception.InteractableLayer);
 
     /// <inheritdoc />
     public void ProcessEnter(Collider other)
@@ -87,7 +92,7 @@ public abstract class SightSense<TComponent>(ReferenceHub dummy) : ISense where 
 
         var component = GetComponent(other);
 
-        if (component && component.gameObject.GetInstanceID() != Dummy.gameObject.GetInstanceID())
+        if (component && component.gameObject.GetInstanceID() != _dummyInstanceID)
         {
             _collidersToComponent[other] = component;
         }
@@ -103,7 +108,7 @@ public abstract class SightSense<TComponent>(ReferenceHub dummy) : ISense where 
 
         var component = GetComponent(other);
 
-        if (component && component.gameObject.GetInstanceID() != Dummy.gameObject.GetInstanceID())
+        if (component && component.gameObject.GetInstanceID() != _dummyInstanceID)
         {
             _collidersToComponent.Remove(other);
 
@@ -168,7 +173,7 @@ public abstract class SightSense<TComponent>(ReferenceHub dummy) : ISense where 
     {
         var camera = Dummy.PlayerCameraReference;
         var cameraPosition = camera.position + camera.forward;
-        var isObstructed = Physics.Linecast(cameraPosition, targetPosition, out var hit, _collisionLayerMask, QueryTriggerInteraction.Ignore);
+        var isObstructed = Physics.Linecast(cameraPosition, targetPosition, out var hit, _obstructionLayerMask, QueryTriggerInteraction.Ignore);
         obstructtionHit = isObstructed ? hit : default;
         return isObstructed;
     }
