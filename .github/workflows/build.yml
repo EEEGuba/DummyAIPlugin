@@ -1,0 +1,28 @@
+name: Build DummyAIPlugin
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+        
+    - name: Build, test and upload artifacts
+      uses: Pogromca-SCP/build-nwapi-plugin@v2
+      with:
+        plugin-name: DummyAIPlugin
+        refs-variable: SL_REFERENCES
+        run-tests: false
