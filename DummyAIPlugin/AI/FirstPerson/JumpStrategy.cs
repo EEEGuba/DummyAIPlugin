@@ -9,8 +9,7 @@ namespace DummyAIPlugin.AI.FirstPerson;
 public class JumpStrategy(FirstPersonMovementModule fpcModule) : IActionStrategy
 {
     /// <inheritdoc />
-    public bool CanPerform => !_controller.IsJumping;
-
+    public bool CanPerform => !_controller.IsJumping && fpcModule.IsGrounded;//changed to also check if dummy is touching ground
     /// <inheritdoc />
     public bool Complete => _controller.IsJumping;
 
@@ -20,11 +19,16 @@ public class JumpStrategy(FirstPersonMovementModule fpcModule) : IActionStrategy
     private readonly FpcJumpController _controller = fpcModule.Motor.JumpController;
 
     /// <inheritdoc />
-    public void Start() => _controller.ForceJump(1.0f);
+    public void Start()
+    {
+        if (CanPerform)//made an if that can probably be simplified but proof of fix mostly
+        {
+            _controller.ForceJump(fpcModule.Motor.MainModule.JumpSpeed);//changed 1.0f to fpcModule.Motor.MainModule.JumpSpeed, 1.0f does a single impulse instead of the slow impulse fade so it jiggles without this
+        }
+    }
+    /// <inheritdoc />
+    public void Update() { }
 
     /// <inheritdoc />
-    public void Update() {}
-
-    /// <inheritdoc />
-    public void Stop() {}
+    public void Stop() { }
 }
