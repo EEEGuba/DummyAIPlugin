@@ -8,6 +8,7 @@ namespace DummyAIPlugin.AI.FirstPerson;
 /// <param name="fpcModule">First person control module to use.</param>
 public class JumpStrategy(FirstPersonMovementModule fpcModule) : IActionStrategy
 {
+    private readonly FirstPersonMovementModule fpcModule = fpcModule;
     /// <inheritdoc />
     public bool CanPerform => !_controller.IsJumping && fpcModule.IsGrounded;//changed to also check if dummy is touching ground
     /// <inheritdoc />
