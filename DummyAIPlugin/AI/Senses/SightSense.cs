@@ -19,9 +19,9 @@ public abstract class SightSense<TComponent>(ReferenceHub dummy) : ISense where 
     protected static TComponent? GetComponent(Collider collider) => collider.GetComponentInParent<TComponent>();
 
     /// <summary>
-    /// Holds FOV*2 of character for <see cref="SightSense{TComponent}"/>, divide desired FOV by 2 
+    /// Holds FOV*2 of character for <see cref="SightSense{TComponent}"/>, divide desired FOV by 2.
     /// </summary>
-    public float Fov { get; set; } = 90.0f;
+    public float FOV { get; set; } = 90.0f;
 
     /// <summary>
     /// Contains dummy's reference hub.
@@ -186,7 +186,7 @@ public abstract class SightSense<TComponent>(ReferenceHub dummy) : ISense where 
             return false;
         }
 
-        if (Vector3.Angle(forward, diff) > Fov)
+        if (Vector3.Angle(forward, diff) > FOV)
         {
             return false;
         }
