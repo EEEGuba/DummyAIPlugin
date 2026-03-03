@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LabApi.Features.Wrappers;
 
 namespace DummyAIPlugin.AI;
 
@@ -9,6 +10,16 @@ namespace DummyAIPlugin.AI;
 /// </summary>
 public class Mind
 {
+    /// <summary>
+    /// Contains the memory of the map the dummy experienced.
+    /// </summary>
+    public List<Room> MapMemory { get; set;} = [];
+
+    /// <summary>
+    /// Contains the intended room the AI is currently trying to get to.
+    /// </summary>
+    public Room? CurrentGoalRoom { get; set;} = null;
+
     /// <summary>
     /// Contains beliefs which AI uses to analyze world/game state.
     /// </summary>
@@ -47,7 +58,7 @@ public class Mind
     /// <summary>
     /// Performs cleanup after mind usage.
     /// </summary>
-    public virtual void Terminate() {}
+    public virtual void Terminate() { }
 
     /// <summary>
     /// Performs AI update.
@@ -103,7 +114,7 @@ public class Mind
         if (_currentGoal is not null)
         {
             var priorityLevel = _currentGoal.Priority;
-            goalsToCheck = [..Goals.Where(g => g.Priority > priorityLevel)];
+            goalsToCheck = [.. Goals.Where(g => g.Priority > priorityLevel)];
         }
 
         var potentialPlan = Plan(goalsToCheck, _lastGoal);
@@ -180,18 +191,18 @@ public class Mind
         var orderedGoals = goals
             .Where(g => g.DesiredEffects.Any(b => !b.Evaluate()))
             .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 0.01f : g.Priority);
-        
+
         foreach (var goal in orderedGoals)
         {
             var goalNode = new Node(null, null, goal.DesiredEffects, 0);
-            
+
             if (FindPath(goalNode, Actions))
             {
                 if (goalNode.IsLeafDead)
                 {
                     continue;
                 }
-                
+
                 var actionStack = new Stack<Action>();
 
                 while (goalNode.Leaves.Count > 0)
@@ -200,11 +211,11 @@ public class Mind
                     goalNode = cheapestLeaf;
                     actionStack.Push(cheapestLeaf.Action!);
                 }
-                
+
                 return new(goal, actionStack, goalNode.Cost);
             }
         }
-        
+
         return null;
     }
 
@@ -217,12 +228,12 @@ public class Mind
     private bool FindPath(Node parent, HashSet<Action> actions)
     {
         var orderedActions = actions.OrderBy(a => a.Cost);
-        
+
         foreach (var action in orderedActions)
         {
             var requiredEffects = parent.RequiredEffects;
             requiredEffects.RemoveWhere(b => b.Evaluate());
-            
+
             if (requiredEffects.Count < 1)
             {
                 return true;
@@ -236,20 +247,20 @@ public class Mind
                 var newAvailableActions = new HashSet<Action>(actions);
                 newAvailableActions.Remove(action);
                 var newNode = new Node(parent, action, newRequiredEffects, parent.Cost + action.Cost);
-                
+
                 if (FindPath(newNode, newAvailableActions))
                 {
                     parent.Leaves.Add(newNode);
                     newRequiredEffects.ExceptWith(newNode.Action!.Preconditions);
                 }
-                
+
                 if (newRequiredEffects.Count < 1)
                 {
                     return true;
                 }
             }
         }
-        
+
         return parent.Leaves.Count > 0;
     }
 }

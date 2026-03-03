@@ -18,4 +18,10 @@ public class Config
     /// </summary>
     [Description("Whether or not the plugin should spawn an SCP-049 AI dummy if SCP-049 isn't present after round start")]
     public bool SpawnScp049IfNotPresentOnStart { get; set; } = true;
+
+    /// <summary>
+    /// Whether or not the individual dummy should forget the map layout he saw in its previous life.
+    /// </summary>
+    [Description("Whether or not the individual dummy should forget the map layout he saw in its previous life")]
+    public bool ForgetMapOnDeath { get; set; } = false;
 }
