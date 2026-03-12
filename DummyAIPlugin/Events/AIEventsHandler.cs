@@ -41,6 +41,7 @@ public class AIEventsHandler(DummyAIPlugin plugin, DummiesManager dummiesManager
     /// <inheritdoc />
     public override void OnServerRoundStarted()
     {
+        _dummiesManager.NavMeshManager.InitializeNavMesh();
         var config = _plugin.Config;
 
         if (config is null)
@@ -59,7 +60,11 @@ public class AIEventsHandler(DummyAIPlugin plugin, DummiesManager dummiesManager
     }
 
     /// <inheritdoc />
-    public override void OnServerRoundRestarted() => _dummiesManager.UnpossesAllDummies();
+    public override void OnServerRoundRestarted()
+    {
+        _dummiesManager.UnpossesAllDummies();
+        _dummiesManager.NavMeshManager.TerminateNavMesh();
+    }
 
     /// <inheritdoc />
     public override void OnPlayerLeft(PlayerLeftEventArgs ev) => _dummiesManager.UnpossesDummy(ev.Player.ReferenceHub);

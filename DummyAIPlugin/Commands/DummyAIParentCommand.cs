@@ -80,6 +80,7 @@ public class DummyAIParentCommand : ParentCommand, IUsageProvider
         RegisterCommand(new UnpossesDummyCommand(_dummiesManager));
         RegisterCommand(new DestroyDummyCommand(_dummiesManager));
         RegisterCommand(new FixPhysicsCommand());
+        RegisterCommand(new GenerateNavMeshCommand(_dummiesManager.NavMeshManager));
     }
 
     /// <summary>
