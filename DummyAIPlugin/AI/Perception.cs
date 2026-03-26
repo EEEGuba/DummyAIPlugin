@@ -40,6 +40,16 @@ public class Perception
     public const string HitboxLayer = "Hitbox";
 
     /// <summary>
+    /// Fence collision layer name.
+    /// </summary>
+    public const string FenceLayer = "Fence";
+
+    /// <summary>
+    /// Invisible collision layer name.
+    /// </summary>
+    public const string InvisibleLayer = "InvisibleCollider";
+
+    /// <summary>
     /// Stores all used senses.
     /// </summary>
     public List<ISense> Senses { get; }

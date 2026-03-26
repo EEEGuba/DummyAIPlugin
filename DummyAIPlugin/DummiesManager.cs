@@ -40,6 +40,11 @@ public class DummiesManager(DummyAIPlugin plugin)
     public IEnumerable<DummyAgent> ActiveDummies => _dummies.Values;
 
     /// <summary>
+    /// Contains a reference to used NavMesh manager instance.
+    /// </summary>
+    public NavMeshManager NavMeshManager { get; } = new();
+
+    /// <summary>
     /// Contains reference to plugin object for access to config object.
     /// </summary>
     private readonly DummyAIPlugin _plugin = plugin;
@@ -62,6 +67,7 @@ public class DummiesManager(DummyAIPlugin plugin)
         Timing.KillCoroutines(_handle);
         _handle = Timing.RunCoroutine(UpdateDummies());
         PreparePhysics();
+        NavMeshManager.InitializeNavMesh();
     }
 
     /// <summary>
@@ -71,6 +77,7 @@ public class DummiesManager(DummyAIPlugin plugin)
     {
         Timing.KillCoroutines(_handle);
         UnpossesAllDummies();
+        NavMeshManager.TerminateNavMesh();
     }
 
     /// <summary>

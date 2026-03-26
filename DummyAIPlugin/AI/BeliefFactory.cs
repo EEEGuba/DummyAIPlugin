@@ -34,5 +34,5 @@ public class BeliefFactory(Dictionary<string, Belief> beliefs)
     /// <param name="name">Name of new belief.</param>
     /// <param name="param">Parameter to use on condition evaluation.</param>
     /// <param name="predicate">New belief's predicate condition.</param>
-    public void AddPredicateBelief<T>(string name, T param, Predicate<T> predicate) => AddBelief(new(name, () => predicate(param)));
+    public void AddPredicateBelief<T>(string name, T param, Predicate<T> predicate) where T : class => AddBelief(new(name, () => predicate(param)));
 }
