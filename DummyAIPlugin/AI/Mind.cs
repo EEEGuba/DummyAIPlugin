@@ -10,15 +10,6 @@ namespace DummyAIPlugin.AI;
 /// </summary>
 public class Mind
 {
-    /// <summary>
-    /// Contains the memory of the map the dummy experienced.
-    /// </summary>
-    public List<Room> MapMemory { get; set;} = [];
-
-    /// <summary>
-    /// Contains the intended room the AI is currently trying to get to.
-    /// </summary>
-    public Room? CurrentGoalRoom { get; set;} = null;
 
     /// <summary>
     /// Contains beliefs which AI uses to analyze world/game state.

@@ -1,15 +1,18 @@
 using DummyAIPlugin.AI.FirstPerson;
 using DummyAIPlugin.AI.Senses;
+using DummyAIPlugin.Navigation;
 using LabApi.Features.Wrappers;
+using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp049;
 using System.Linq;
+using UnityEngine;
 
 namespace DummyAIPlugin.AI.SCP049;
 
 /// <summary>
 /// AI mind for SCP-049 dummies.
 /// </summary>
-public class SCP049Mind : Mind
+public class SCP049Mind : Mind,IPathParent
 {
     /// <summary>
     /// Sight sense for players detection.
@@ -21,7 +24,11 @@ public class SCP049Mind : Mind
     /// </summary>
     public MapSense? MapSense { get; }
     public new MapMemory? MapMemory { get; }
+    private readonly FpcMotor _fpcMotor;
+    public Vector3 Position => _fpcMotor.Position;
 
+    public Vector3 Destination {get;set;}
+    public Path Path{get;}
     /// <summary>
     /// Creates new mind instance.
     /// </summary>
@@ -30,7 +37,7 @@ public class SCP049Mind : Mind
     /// <param name="hub">Target dummy's reference hub.</param>
     public SCP049Mind(Perception perception, Scp049Role role, ReferenceHub hub)
     {
-
+        _fpcMotor = role.FpcModule.Motor;
         PlayersSense = new(hub);
         MapSense = new(hub);
         MapMemory = new MapMemory(Room.List);
@@ -39,7 +46,7 @@ public class SCP049Mind : Mind
         var factory = new BeliefFactory(Beliefs);
         const string TargetDetected = "TargetDetected";
         const string NoTargets = "NoTargets";
-
+        Path=new(this);
         factory.AddPredicateBelief(TargetDetected, PlayersSense, s => s.ComponentsWithinSight.Any());
         factory.AddPredicateBelief(NoTargets, PlayersSense, s => !s.ComponentsWithinSight.Any());
 
@@ -52,7 +59,7 @@ public class SCP049Mind : Mind
             .AddEffect(Beliefs[NoTargets])
             .Build());
 
-        Actions.Add(new Action.Builder("GoTo", new MapGoalStrategy(role.FpcModule, MapSense, MapMemory, null))
+        Actions.Add(new Action.Builder("GoTo", new MapGoalStrategy(Path,role.FpcModule, MapSense, MapMemory, null),0)
             .AddPrecondition(Beliefs[TargetDetected])
             .AddEffect(Beliefs[NoTargets])
             .Build());

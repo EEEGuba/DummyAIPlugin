@@ -25,16 +25,13 @@ public class JumpStrategy(FirstPersonMovementModule fpcModule) : IActionStrategy
     private readonly FpcJumpController _controller = fpcModule.Motor.JumpController;
 
     /// <inheritdoc />
-    public void Start()
+    public void Start(){  }
+    /// <inheritdoc />
+    public void Update()
     {
-        if (CanPerform)//made an if that can probably be simplified but proof of fix mostly
-        {
             //changed 1.0f to fpcModule.Motor.MainModule.JumpSpeed, 1.0f does a small impulse instead of the characters jump force  so it jiggles without this
             _controller.ForceJump(_fpcModule.Motor.MainModule.JumpSpeed);
-        }
     }
-    /// <inheritdoc />
-    public void Update() { }
 
     /// <inheritdoc />
     public void Stop() { }

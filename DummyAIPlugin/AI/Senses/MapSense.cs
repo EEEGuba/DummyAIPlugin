@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DummyAIPlugin.Navigation;
 using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using MapGeneration;
@@ -10,11 +11,12 @@ using UnityEngine;
 
 namespace DummyAIPlugin.AI.Senses;
 
-public class MapSense(ReferenceHub dummy) //Room.GetRoomAtPosition(Vec3)
+public class MapSense(ReferenceHub dummy/*,Path path*/) //Room.GetRoomAtPosition(Vec3)
 {
     private readonly IReadOnlyCollection<Room> _RoomList = Room.List;
     private readonly Vector3 _currentDummyPosition = dummy.GetPosition();
-
+    //private readonly Path _path = path;
+    //private Vector3 _currentPos = path.Parent.Position;
     public void LogIt()
     {
         LabApi.Features.Console.Logger.Info($"Room count: {_RoomList.Count}");
@@ -24,9 +26,10 @@ public class MapSense(ReferenceHub dummy) //Room.GetRoomAtPosition(Vec3)
     }
 
     // example helper using Room.FindPath
-    public List<Room> ComeToHeavy()
+    public List<Room> ComeToHeavy(Vector3 startPos)
     {
-        Room? currentRoom = Room.GetRoomAtPosition(_currentDummyPosition);
+        Room? currentRoom = Room.GetRoomAtPosition(startPos);
+        LabApi.Features.Console.Logger.Info($"{startPos},{currentRoom}");
         List<Room> workList = [];
         if (currentRoom == null)
         {
